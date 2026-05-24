@@ -1,2 +1,2 @@
 # Project/Game
-Robo Cleaner Game
+Robo Cleaner: Lab Escape is an SFML game project
