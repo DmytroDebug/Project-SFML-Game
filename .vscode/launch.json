@@ -1,13 +1,13 @@
 {
     "configurations": [
         {
-            "name": "C/C++: g++ build and debug active file",
+            "name": "Run Game",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+            "program": "${workspaceFolder}\\game.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${fileDirname}",
+            "cwd": "${workspaceFolder}",
             "environment": [
                 {
                     "name": "PATH",
@@ -32,5 +32,5 @@
             "miDebuggerPath": "D:\\MSYS2\\ucrt64\\bin\\gdb.exe"
         }
     ],
-    "version": "2.0.0"
+    "version": "0.2.0"
 }
