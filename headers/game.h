@@ -1,5 +1,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <memory>
+#include <vector>
+#include "game_object.h"
 
 class Game
 {
@@ -18,6 +21,7 @@ private:
     void render();
     void renderMainMenu();
     void renderPlaying();
+    void startGame();
     bool isMouseHere(sf::Vector2f position, sf::Vector2f size) const;
 
     sf::RenderWindow window;
@@ -30,4 +34,6 @@ private:
     sf::Vector2f exitButtonSize;
 
     GameState gameState;
+
+    std::vector<std::unique_ptr<GameObject>> objects;
 };

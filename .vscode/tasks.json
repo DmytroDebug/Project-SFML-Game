@@ -8,18 +8,15 @@
                 "-fdiagnostics-color=always",
                 "-g",
                 "-std=c++17",
-
                 "-ID:/libs/SFML-3.1.0/include",
                 "-I${workspaceFolder}/headers",
-
                 "-LD:/libs/SFML-3.1.0/lib",
-
                 "${workspaceFolder}/source/main_g.cpp",
                 "${workspaceFolder}/source/game.cpp",
-
+                "${workspaceFolder}/source/game_object.cpp",
+                "${workspaceFolder}/source/player_.cpp",
                 "-o",
                 "${workspaceFolder}/game.exe",
-
                 "-lsfml-graphics",
                 "-lsfml-window",
                 "-lsfml-system"
