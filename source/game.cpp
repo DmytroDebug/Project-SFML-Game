@@ -18,6 +18,10 @@ Game::Game()
     {
         std::cout << "Fail loading font" << std::endl;
     }
+    if (!labBackgroundTexture.loadFromFile("attachments/textures/lab_background.png"))
+    {
+        std::cout << "Failed to load image: attachments/textures/lab_background.png" << std::endl;
+    }
     playButtonPosition = {60.f, 377.f};
     playButtonSize = {350.f, 50.f};
 
@@ -146,30 +150,18 @@ void Game::renderMainMenu()
 }
 void Game::renderPlaying()
 {
-    sf::RectangleShape background({1280.f, 720.f});
-    background.setFillColor(sf::Color{22, 25, 30});
-    background.setPosition({0.f, 0.f});
-    window.draw(background);
+    sf::Sprite labBackground(labBackgroundTexture);
+    sf::Vector2u textureSize = labBackgroundTexture.getSize();
+    sf::Vector2u windowSize = window.getSize();
+    float scaleX = static_cast<float>(windowSize.x) / static_cast<float>(textureSize.x);
+    float scaleY = static_cast<float>(windowSize.y) / static_cast<float>(textureSize.y);
+    labBackground.setScale({scaleX, scaleY});
 
-    sf::RectangleShape floorLine({1280.f, 20.f});
-    floorLine.setPosition({0.f, 670.f});
-    floorLine.setFillColor(sf::Color{70, 80, 90});
-    window.draw(floorLine);
-
-    sf::RectangleShape UpLine({1280.f, 20.f});
-    UpLine.setPosition({0.f, 45.f});
-    UpLine.setFillColor(sf::Color{70, 80, 90});
-    window.draw(UpLine);
-
-    for (auto &object : objects)
+    window.draw(labBackground);
+    for (auto& object : objects)
     {
         object->draw(window);
     }
-
-    sf::Text text(font, "WASD / Arrows - move      Mouse - Aim            Shoot - LMB             ESC - menu", 22);
-    text.setFillColor(sf::Color{180, 185, 195});
-    text.setPosition({30.f, 680.f});
-    window.draw(text);
 }
 
 bool Game::isMouseHere(sf::Vector2f position, sf::Vector2f size) const

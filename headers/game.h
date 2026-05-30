@@ -27,6 +27,7 @@ private:
     sf::RenderWindow window;
     sf::Clock clock;
     sf::Font font;
+    sf::Texture labBackgroundTexture;
     sf::Texture menuBackgroundTexture;
     sf::Vector2f playButtonPosition;
     sf::Vector2f playButtonSize;
