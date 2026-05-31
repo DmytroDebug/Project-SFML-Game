@@ -173,7 +173,7 @@ void Game::startGame()
     objects.push_back(
         std::make_unique<PlayerRobot>(
             sf::Vector2f{640.f, 360.f},
-            280.f,
+            230.f,
             sf::Vector2f{1280.f, 720.f}
         )
     );

@@ -29,7 +29,7 @@ PlayerRobot::PlayerRobot(sf::Vector2f startPosition, float movementSpeed, sf::Ve
         static_cast<float>(frameHeight) / 2.f
     });
 
-    sprite.setScale({0.15f, 0.15f});
+    sprite.setScale({0.25f, 0.25f});
     sprite.setPosition(position);
 }
 
@@ -62,28 +62,32 @@ bool PlayerRobot::move(float deltaTime)
     {
         direction.y -= 1.f;
     }
-
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) ||
         sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
     {
         direction.y += 1.f;
     }
-
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) ||
         sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
     {
         direction.x -= 1.f;
     }
-
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) ||
         sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
     {
         direction.x += 1.f;
     }
-
     if (direction.x == 0.f && direction.y == 0.f)
     {
         return false;
+    }
+    if (direction.x > 0.f)
+    {
+        sprite.setScale({0.25f, 0.25f});
+    }
+    else if (direction.x < 0.f)
+    {
+        sprite.setScale({-0.25f, 0.25f});
     }
 
     float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
@@ -109,12 +113,12 @@ void PlayerRobot::animate(float deltaTime, bool moving)
 
     animationTimer += deltaTime;
 
-    if (animationTimer >= 0.12f)
+    if (animationTimer >= 0.20f)
     {
         animationTimer = 0.f;
         currentFrame++;
 
-        if (currentFrame >= 4)
+        if (currentFrame >= 2)
         {
             currentFrame = 0;
         }
