@@ -1,6 +1,7 @@
 #include "game.h"
 #include "../GameObject/Player/player_.h"
 #include "../GameObject/Projectile/projectile.h"
+#include "../GameObject/Enemy/enemy.h"
 #include <cmath>
 
 #include <iostream>
@@ -183,8 +184,12 @@ void Game::drawBackground(const sf::Texture &texture)
 void Game::startGame()
 {
     objects.clear();
+
     objects.push_back(std::make_unique<PlayerRobot>(sf::Vector2f{310.f, 360.f}, 230.f, sf::Vector2f{1280.f, 720.f}));
+    objects.push_back(std::make_unique<Enemy>(sf::Vector2f{1330.f, 360.f},70.f));
+
     window.setMouseCursorVisible(false);
+    
     gameState = GameState::Playing;
 }
 
