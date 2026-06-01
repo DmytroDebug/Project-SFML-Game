@@ -10,9 +10,11 @@ public:
     void update(float deltaTime) override;
     void draw(sf::RenderWindow& window) override;
     sf::FloatRect getBounds() const override;
+    int getDamage() const;
 
 private:
     sf::CircleShape shape;
     sf::Vector2f direction;
     float speed;
+    int damage;
 };

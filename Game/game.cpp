@@ -2,14 +2,20 @@
 #include "../GameObject/Player/player_.h"
 #include "../GameObject/Projectile/projectile.h"
 #include "../GameObject/Enemy/enemy.h"
-#include <cmath>
 
+#include <string>
+#include <cmath>
 #include <iostream>
 #include <memory>
 
-Game::Game() : window(sf::VideoMode({1280, 720}), "Robo Cleaner: Lab Escape"), gameState(GameState::MainMenu)
+Game::Game() : window(sf::VideoMode({1280, 720}), "Robo Cleaner: Lab Escape"), gameState(GameState::MainMenu), enemySpawnTime(2.5f)
 {
     window.setFramerateLimit(60);
+
+    if (!font.openFromFile("Attachments/type/menu.ttf"))
+    {
+        std::cout << "Failed to load font" << std::endl;
+    }
 
     if (!menuBackgroundTexture.loadFromFile("Attachments/textures/menu_background.png"))
     {
@@ -25,6 +31,8 @@ Game::Game() : window(sf::VideoMode({1280, 720}), "Robo Cleaner: Lab Escape"), g
 
     exitButtonPosition = {60.f, 465.f};
     exitButtonSize = {350.f, 50.f};
+
+    score = 0;
 }
 
 void Game::run()
@@ -109,6 +117,14 @@ void Game::update(float deltaTime)
     {
         object->update(deltaTime);
     }
+    if (enemySpawnClock.getElapsedTime().asSeconds() >= enemySpawnTime)
+    {
+        spawnEnemy();
+        enemySpawnClock.restart();
+    }
+
+    checkCollisions();
+
     for (int i = static_cast<int>(objects.size()) - 1; i >= 0; i--)
     {
         if (!objects[i]->isAlive())
@@ -164,6 +180,8 @@ void Game::renderPlaying()
     {
         object->draw(window);
     }
+
+    drawUI();
     drawCursor();
 }
 
@@ -184,12 +202,14 @@ void Game::drawBackground(const sf::Texture &texture)
 void Game::startGame()
 {
     objects.clear();
+    score = 0;
 
     objects.push_back(std::make_unique<PlayerRobot>(sf::Vector2f{310.f, 360.f}, 230.f, sf::Vector2f{1280.f, 720.f}));
-    objects.push_back(std::make_unique<Enemy>(sf::Vector2f{1330.f, 360.f},70.f));
+
+    enemySpawnClock.restart();
 
     window.setMouseCursorVisible(false);
-    
+
     gameState = GameState::Playing;
 }
 
@@ -252,4 +272,54 @@ void Game::drawCursor()
     dot.setFillColor(sf::Color{80, 180, 255});
 
     window.draw(dot);
+}
+void Game::spawnEnemy()
+{
+    objects.push_back(std::make_unique<Enemy>(sf::Vector2f{1330.f, 360.f}, 70.f));
+}
+void Game::checkCollisions()
+{
+    for (auto& firstObject : objects)
+    {
+        Projectile* projectile = dynamic_cast<Projectile*>(firstObject.get());
+
+        if (projectile == nullptr || !projectile->isAlive())
+        {
+            continue;
+        }
+
+        for (auto& secondObject : objects)
+        {
+            Enemy* enemy = dynamic_cast<Enemy*>(secondObject.get());
+
+            if (enemy == nullptr || !enemy->isAlive())
+            {
+                continue;
+            }
+
+            if (projectile->getBounds().findIntersection(enemy->getBounds()))
+            {
+                enemy->takeDamage(projectile->getDamage());
+                projectile->destroy();
+
+                if (!enemy->isAlive())
+                {
+                    score += enemy->getScoreValue();
+                }
+
+                break;
+            }
+        }
+    }
+}
+void Game::drawUI()
+{
+    sf::Text scoreText(font, "Score: " + std::to_string(score), 28);
+
+    scoreText.setPosition({25.f, 20.f});
+    scoreText.setFillColor(sf::Color{20, 60, 170});
+    scoreText.setOutlineThickness(2.f);
+    scoreText.setOutlineColor(sf::Color::White);
+
+    window.draw(scoreText);
 }

@@ -1,6 +1,10 @@
 #include "enemy.h"
 
-Enemy::Enemy(sf::Vector2f startPosition, float movementSpeed): GameObject(startPosition),speed(movementSpeed)
+Enemy::Enemy(sf::Vector2f startPosition, float movementSpeed)
+    : GameObject(startPosition),
+      speed(movementSpeed),
+      health(3),
+      scoreValue(10)
 {
     body.setSize({55.f, 55.f});
     body.setOrigin({27.5f, 27.5f});
@@ -31,4 +35,18 @@ void Enemy::draw(sf::RenderWindow& window)
 sf::FloatRect Enemy::getBounds() const
 {
     return body.getGlobalBounds();
+}
+void Enemy::takeDamage(int damage)
+{
+    health -= damage;
+
+    if (health <= 0)
+    {
+        destroy();
+    }
+}
+
+int Enemy::getScoreValue() const
+{
+    return scoreValue;
 }

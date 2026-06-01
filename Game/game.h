@@ -25,16 +25,23 @@ private:
 
     void renderMainMenu();
     void renderPlaying();
-    void drawBackground(const sf::Texture& texture);
-
+    void drawBackground(const sf::Texture &texture);
 
     void startGame();
     bool isMouseHere(sf::Vector2f position, sf::Vector2f size) const;
     void drawCursor();
+
     void shoot(sf::Vector2f targetPosition);
 
     sf::RenderWindow window;
     sf::Clock clock;
+
+    void spawnEnemy();
+    sf::Clock enemySpawnClock;
+    float enemySpawnTime;
+    void checkCollisions();
+    int score;
+    void drawUI();
 
     sf::Texture menuBackgroundTexture;
     sf::Texture labBackgroundTexture;
@@ -48,4 +55,5 @@ private:
     GameState gameState;
 
     std::vector<std::unique_ptr<GameObject>> objects;
+    sf::Font font;
 };

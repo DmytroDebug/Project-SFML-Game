@@ -5,7 +5,8 @@
 Projectile::Projectile(sf::Vector2f startPosition, sf::Vector2f targetPosition)
     : GameObject(startPosition),
       direction{0.f, 0.f},
-      speed(700.f)
+      speed(700.f),
+      damage(1)
 {
     sf::Vector2f difference{
         targetPosition.x - startPosition.x,
@@ -49,4 +50,8 @@ void Projectile::draw(sf::RenderWindow &window)
 sf::FloatRect Projectile::getBounds() const
 {
     return shape.getGlobalBounds();
+}
+int Projectile::getDamage() const
+{
+    return damage;
 }
