@@ -27,8 +27,11 @@ private:
     void renderPlaying();
     void drawBackground(const sf::Texture& texture);
 
+
     void startGame();
     bool isMouseHere(sf::Vector2f position, sf::Vector2f size) const;
+    void drawCursor();
+    void shoot(sf::Vector2f targetPosition);
 
     sf::RenderWindow window;
     sf::Clock clock;

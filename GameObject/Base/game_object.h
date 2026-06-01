@@ -11,6 +11,7 @@ public:
     virtual void update(float deltaTime) = 0;
     virtual void draw(sf::RenderWindow& window) = 0;
     virtual sf::FloatRect getBounds() const = 0;
+    sf::Vector2f getPosition() const;
 
     bool isAlive() const;
     void destroy();

@@ -24,10 +24,7 @@ PlayerRobot::PlayerRobot(sf::Vector2f startPosition, float movementSpeed, sf::Ve
     sprite.setTexture(texture);
     setFrame(0);
 
-    sprite.setOrigin({
-        static_cast<float>(frameWidth) / 2.f,
-        static_cast<float>(frameHeight) / 2.f
-    });
+    sprite.setOrigin({static_cast<float>(frameWidth) / 2.f,static_cast<float>(frameHeight) / 2.f});
 
     sprite.setScale({0.25f, 0.25f});
     sprite.setPosition(position);

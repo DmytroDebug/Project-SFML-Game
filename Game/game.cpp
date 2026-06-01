@@ -1,12 +1,12 @@
 #include "game.h"
 #include "../GameObject/Player/player_.h"
+#include "../GameObject/Projectile/projectile.h"
+#include <cmath>
 
 #include <iostream>
 #include <memory>
 
-Game::Game()
-    : window(sf::VideoMode({1280, 720}), "Robo Cleaner: Lab Escape"),
-      gameState(GameState::MainMenu)
+Game::Game() : window(sf::VideoMode({1280, 720}), "Robo Cleaner: Lab Escape"), gameState(GameState::MainMenu)
 {
     window.setFramerateLimit(60);
 
@@ -14,7 +14,6 @@ Game::Game()
     {
         std::cout << "Failed to load menu background" << std::endl;
     }
-
     if (!labBackgroundTexture.loadFromFile("Attachments/textures/lab_background.png"))
     {
         std::cout << "Failed to load lab background" << std::endl;
@@ -67,6 +66,7 @@ void Game::handleEvents()
             {
                 if (key->code == sf::Keyboard::Key::Escape)
                 {
+                    window.setMouseCursorVisible(true);
                     gameState = GameState::MainMenu;
                 }
             }
@@ -87,6 +87,13 @@ void Game::handleEvents()
                     window.close();
                 }
             }
+            if (gameState == GameState::Playing)
+            {
+                sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
+                sf::Vector2f targetPosition = window.mapPixelToCoords(mousePosition);
+
+                shoot(targetPosition);
+            }
         }
     }
 }
@@ -97,10 +104,16 @@ void Game::update(float deltaTime)
     {
         return;
     }
-
-    for (auto& object : objects)
+    for (auto &object : objects)
     {
         object->update(deltaTime);
+    }
+    for (int i = static_cast<int>(objects.size()) - 1; i >= 0; i--)
+    {
+        if (!objects[i]->isAlive())
+        {
+            objects.erase(objects.begin() + i);
+        }
     }
 }
 
@@ -146,13 +159,14 @@ void Game::renderPlaying()
 {
     drawBackground(labBackgroundTexture);
 
-    for (auto& object : objects)
+    for (auto &object : objects)
     {
         object->draw(window);
     }
+    drawCursor();
 }
 
-void Game::drawBackground(const sf::Texture& texture)
+void Game::drawBackground(const sf::Texture &texture)
 {
     sf::Sprite background(texture);
 
@@ -169,15 +183,8 @@ void Game::drawBackground(const sf::Texture& texture)
 void Game::startGame()
 {
     objects.clear();
-
-    objects.push_back(
-        std::make_unique<PlayerRobot>(
-            sf::Vector2f{640.f, 360.f},
-            230.f,
-            sf::Vector2f{1280.f, 720.f}
-        )
-    );
-
+    objects.push_back(std::make_unique<PlayerRobot>(sf::Vector2f{310.f, 360.f}, 230.f, sf::Vector2f{1280.f, 720.f}));
+    window.setMouseCursorVisible(false);
     gameState = GameState::Playing;
 }
 
@@ -189,4 +196,55 @@ bool Game::isMouseHere(sf::Vector2f position, sf::Vector2f size) const
            mousePosition.x <= position.x + size.x &&
            mousePosition.y >= position.y &&
            mousePosition.y <= position.y + size.y;
+}
+void Game::shoot(sf::Vector2f targetPosition)
+{
+    if (objects.empty())
+    {
+        return;
+    }
+
+    sf::Vector2f playerPosition = objects[0]->getPosition();
+
+    sf::Vector2f direction{
+        targetPosition.x - playerPosition.x,
+        targetPosition.y - playerPosition.y};
+
+    float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+
+    if (length == 0.f)
+    {
+        return;
+    }
+
+    direction.x /= length;
+    direction.y /= length;
+
+    sf::Vector2f gunPosition{
+        playerPosition.x + direction.x * 45.f,
+        playerPosition.y + direction.y * 45.f};
+
+    objects.push_back(std::make_unique<Projectile>(gunPosition, targetPosition));
+}
+void Game::drawCursor()
+{
+    sf::Vector2i mousePixelPosition = sf::Mouse::getPosition(window);
+    sf::Vector2f mousePosition = window.mapPixelToCoords(mousePixelPosition);
+
+    sf::CircleShape cursor(10.f);
+    cursor.setOrigin({10.f, 10.f});
+    cursor.setPosition(mousePosition);
+
+    cursor.setFillColor(sf::Color::Transparent);
+    cursor.setOutlineThickness(2.f);
+    cursor.setOutlineColor(sf::Color{20, 60, 170});
+
+    window.draw(cursor);
+
+    sf::CircleShape dot(2.f);
+    dot.setOrigin({2.f, 2.f});
+    dot.setPosition(mousePosition);
+    dot.setFillColor(sf::Color{80, 180, 255});
+
+    window.draw(dot);
 }

@@ -18,3 +18,7 @@ void GameObject::destroy()
 {
     alive = false;
 }
+sf::Vector2f GameObject::getPosition() const
+{
+    return position;
+}
