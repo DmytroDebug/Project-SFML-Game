@@ -37,6 +37,7 @@ private:
     sf::Clock clock;
 
     void spawnEnemy();
+    std::vector<float> enemyLines;
     sf::Clock enemySpawnClock;
     float enemySpawnTime;
     void checkCollisions();

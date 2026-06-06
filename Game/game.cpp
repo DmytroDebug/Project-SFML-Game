@@ -7,10 +7,13 @@
 #include <cmath>
 #include <iostream>
 #include <memory>
+#include <cstdlib>
+#include <ctime>
 
 Game::Game() : window(sf::VideoMode({1280, 720}), "Robo Cleaner: Lab Escape"), gameState(GameState::MainMenu), enemySpawnTime(2.5f)
 {
     window.setFramerateLimit(60);
+    std::srand(static_cast<unsigned>(std::time(nullptr)));
 
     if (!font.openFromFile("Attachments/type/menu.ttf"))
     {
@@ -31,6 +34,8 @@ Game::Game() : window(sf::VideoMode({1280, 720}), "Robo Cleaner: Lab Escape"), g
 
     exitButtonPosition = {60.f, 465.f};
     exitButtonSize = {350.f, 50.f};
+
+    enemyLines = {170.f,260.f,350.f,440.f,530.f};
 
     score = 0;
 }
@@ -275,7 +280,10 @@ void Game::drawCursor()
 }
 void Game::spawnEnemy()
 {
-    objects.push_back(std::make_unique<Enemy>(sf::Vector2f{1330.f, 360.f}, 70.f));
+    int lineIndex = std::rand() % enemyLines.size();
+    float enemyY = enemyLines[lineIndex];
+
+    objects.push_back(std::make_unique<Enemy>(sf::Vector2f{1330.f, enemyY},70.f));
 }
 void Game::checkCollisions()
 {
