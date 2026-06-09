@@ -17,6 +17,7 @@
                 "${workspaceFolder}/GameObject/Player/player_.cpp",
                 "${workspaceFolder}/GameObject/Projectile/projectile.cpp",
                 "${workspaceFolder}/GameObject/Enemy/enemy.cpp",
+                "${workspaceFolder}/GameObject/Projectile/enemy_bullet.cpp",
                 "-o",
                 "${workspaceFolder}/game.exe",
                 "-lsfml-graphics",

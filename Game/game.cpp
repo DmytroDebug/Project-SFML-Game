@@ -2,6 +2,7 @@
 #include "../GameObject/Player/player_.h"
 #include "../GameObject/Projectile/projectile.h"
 #include "../GameObject/Enemy/enemy.h"
+#include "../GameObject/Projectile/enemy_bullet.h"
 
 #include <string>
 #include <cmath>
@@ -35,7 +36,10 @@ Game::Game() : window(sf::VideoMode({1280, 720}), "Robo Cleaner: Lab Escape"), g
     exitButtonPosition = {60.f, 465.f};
     exitButtonSize = {350.f, 50.f};
 
-    enemyLines = {170.f,260.f,350.f,440.f,530.f};
+    enemyLines = {170.f, 260.f, 350.f, 440.f, 530.f};
+
+    enemyShootTime = 1.4f;
+    lives = 3;
 
     score = 0;
 }
@@ -88,25 +92,26 @@ void Game::handleEvents()
 
         if (auto mouse = event->getIf<sf::Event::MouseButtonPressed>())
         {
-            if (mouse->button == sf::Mouse::Button::Left &&
-                gameState == GameState::MainMenu)
+            if (mouse->button == sf::Mouse::Button::Left)
             {
-                if (isMouseHere(playButtonPosition, playButtonSize))
+                if (gameState == GameState::MainMenu)
                 {
-                    startGame();
+                    if (isMouseHere(playButtonPosition, playButtonSize))
+                    {
+                        startGame();
+                    }
+                    else if (isMouseHere(exitButtonPosition, exitButtonSize))
+                    {
+                        window.close();
+                    }
                 }
-
-                if (isMouseHere(exitButtonPosition, exitButtonSize))
+                else if (gameState == GameState::Playing)
                 {
-                    window.close();
-                }
-            }
-            if (gameState == GameState::Playing)
-            {
-                sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
-                sf::Vector2f targetPosition = window.mapPixelToCoords(mousePosition);
+                    sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
+                    sf::Vector2f targetPosition = window.mapPixelToCoords(mousePosition);
 
-                shoot(targetPosition);
+                    shoot(targetPosition);
+                }
             }
         }
     }
@@ -118,17 +123,26 @@ void Game::update(float deltaTime)
     {
         return;
     }
+
     for (auto &object : objects)
     {
         object->update(deltaTime);
     }
+
     if (enemySpawnClock.getElapsedTime().asSeconds() >= enemySpawnTime)
     {
         spawnEnemy();
         enemySpawnClock.restart();
     }
 
+    if (enemyShootClock.getElapsedTime().asSeconds() >= enemyShootTime)
+    {
+        enemyShoot();
+        enemyShootClock.restart();
+    }
+
     checkCollisions();
+    checkPlayerHit();
 
     for (int i = static_cast<int>(objects.size()) - 1; i >= 0; i--)
     {
@@ -208,10 +222,12 @@ void Game::startGame()
 {
     objects.clear();
     score = 0;
+    lives = 3;
 
     objects.push_back(std::make_unique<PlayerRobot>(sf::Vector2f{310.f, 360.f}, 230.f, sf::Vector2f{1280.f, 720.f}));
 
     enemySpawnClock.restart();
+    enemyShootClock.restart();
 
     window.setMouseCursorVisible(false);
 
@@ -283,22 +299,22 @@ void Game::spawnEnemy()
     int lineIndex = std::rand() % enemyLines.size();
     float enemyY = enemyLines[lineIndex];
 
-    objects.push_back(std::make_unique<Enemy>(sf::Vector2f{1330.f, enemyY},70.f));
+    objects.push_back(std::make_unique<Enemy>(sf::Vector2f{1330.f, enemyY}, 70.f));
 }
 void Game::checkCollisions()
 {
-    for (auto& firstObject : objects)
+    for (auto &firstObject : objects)
     {
-        Projectile* projectile = dynamic_cast<Projectile*>(firstObject.get());
+        Projectile *projectile = dynamic_cast<Projectile *>(firstObject.get());
 
         if (projectile == nullptr || !projectile->isAlive())
         {
             continue;
         }
 
-        for (auto& secondObject : objects)
+        for (auto &secondObject : objects)
         {
-            Enemy* enemy = dynamic_cast<Enemy*>(secondObject.get());
+            Enemy *enemy = dynamic_cast<Enemy *>(secondObject.get());
 
             if (enemy == nullptr || !enemy->isAlive())
             {
@@ -330,4 +346,70 @@ void Game::drawUI()
     scoreText.setOutlineColor(sf::Color::White);
 
     window.draw(scoreText);
+
+    sf::Text livesText(font, "Lives: " + std::to_string(lives), 28);
+
+    livesText.setPosition({25.f, 55.f});
+    livesText.setFillColor(sf::Color{20, 60, 170});
+    livesText.setOutlineThickness(2.f);
+    livesText.setOutlineColor(sf::Color::White);
+
+    window.draw(livesText);
+}
+void Game::enemyShoot()
+{
+    for (auto &object : objects)
+    {
+        Enemy *enemy = dynamic_cast<Enemy *>(object.get());
+
+        if (enemy != nullptr && enemy->isAlive())
+        {
+            sf::Vector2f enemyPosition = enemy->getPosition();
+
+            objects.push_back(std::make_unique<EnemyBullet>(sf::Vector2f{enemyPosition.x - 35.f, enemyPosition.y}));
+
+            return;
+        }
+    }
+}
+void Game::checkPlayerHit()
+{
+    PlayerRobot *player = nullptr;
+
+    for (auto &object : objects)
+    {
+        player = dynamic_cast<PlayerRobot *>(object.get());
+
+        if (player != nullptr)
+        {
+            break;
+        }
+    }
+
+    if (player == nullptr)
+    {
+        return;
+    }
+
+    for (auto &object : objects)
+    {
+        EnemyBullet *bullet = dynamic_cast<EnemyBullet *>(object.get());
+
+        if (bullet == nullptr || !bullet->isAlive())
+        {
+            continue;
+        }
+
+        if (bullet->getBounds().findIntersection(player->getBounds()))
+        {
+            bullet->destroy();
+            lives--;
+
+            if (lives <= 0)
+            {
+                window.setMouseCursorVisible(true);
+                gameState = GameState::MainMenu;
+            }
+        }
+    }
 }

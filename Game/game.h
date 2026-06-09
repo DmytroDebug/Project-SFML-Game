@@ -43,6 +43,11 @@ private:
     void checkCollisions();
     int score;
     void drawUI();
+    sf::Clock enemyShootClock;
+    float enemyShootTime;
+    int lives;
+    void enemyShoot();
+    void checkPlayerHit();
 
     sf::Texture menuBackgroundTexture;
     sf::Texture labBackgroundTexture;
