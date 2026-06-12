@@ -88,6 +88,18 @@ void Game::handleEvents()
                     gameState = GameState::MainMenu;
                 }
             }
+            if (gameState == GameState::GameOver)
+            {
+                if (key->code == sf::Keyboard::Key::Enter)
+                {
+                    startGame();
+                }
+
+                if (key->code == sf::Keyboard::Key::Escape)
+                {
+                    gameState = GameState::MainMenu;
+                }
+            }
         }
 
         if (auto mouse = event->getIf<sf::Event::MouseButtonPressed>())
@@ -166,6 +178,10 @@ void Game::render()
     {
         renderPlaying();
     }
+    if (gameState == GameState::GameOver)
+    {
+        renderGameOver();
+    }
 
     window.display();
 }
@@ -202,6 +218,36 @@ void Game::renderPlaying()
 
     drawUI();
     drawCursor();
+}
+void Game::renderGameOver()
+{
+    drawBackground(labBackgroundTexture);
+
+    sf::RectangleShape darkLayer({1280.f, 720.f});
+    darkLayer.setFillColor(sf::Color{0, 0, 0, 160});
+    window.draw(darkLayer);
+
+    sf::Text title(font, "GAME OVER", 64);
+    title.setPosition({490.f, 220.f});
+    title.setFillColor(sf::Color{220, 40, 60});
+    title.setOutlineThickness(3.f);
+    title.setOutlineColor(sf::Color::White);
+    window.draw(title);
+
+    sf::Text scoreText(font, "Final Score: " + std::to_string(score), 34);
+    scoreText.setPosition({530.f, 315.f});
+    scoreText.setFillColor(sf::Color::White);
+    window.draw(scoreText);
+
+    sf::Text restartText(font, "ENTER to restart         ESC to return to menu", 28);
+    restartText.setPosition({410.f, 660.f});
+    restartText.setFillColor(sf::Color{80, 180, 255});
+    window.draw(restartText);
+
+    // sf::Text menuText(font, "Press ESC to return to menu", 24);
+    // menuText.setPosition({495.f, 440.f});
+    // menuText.setFillColor(sf::Color::White);
+    // window.draw(menuText);
 }
 
 void Game::drawBackground(const sf::Texture &texture)
@@ -408,7 +454,7 @@ void Game::checkPlayerHit()
             if (lives <= 0)
             {
                 window.setMouseCursorVisible(true);
-                gameState = GameState::MainMenu;
+                gameState = GameState::GameOver;
             }
         }
     }

@@ -16,7 +16,8 @@ private:
     enum class GameState
     {
         MainMenu,
-        Playing
+        Playing,
+        GameOver
     };
 
     void handleEvents();
@@ -25,6 +26,7 @@ private:
 
     void renderMainMenu();
     void renderPlaying();
+    void renderGameOver();
     void drawBackground(const sf::Texture &texture);
 
     void startGame();
