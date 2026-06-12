@@ -384,24 +384,97 @@ void Game::checkCollisions()
 }
 void Game::drawUI()
 {
-    sf::Text scoreText(font, "Score: " + std::to_string(score), 28);
+    float panelX = 25.f;
+    float panelY = 10.f;
+    float panelWidth = 1230.f;
+    float panelHeight = 48.f;
 
-    scoreText.setPosition({25.f, 20.f});
-    scoreText.setFillColor(sf::Color{20, 60, 170});
-    scoreText.setOutlineThickness(2.f);
-    scoreText.setOutlineColor(sf::Color::White);
+    sf::RectangleShape panel({panelWidth, panelHeight});
+    panel.setPosition({panelX, panelY});
+    panel.setFillColor(sf::Color{245, 245, 245, 245});
+    panel.setOutlineThickness(2.f);
+    panel.setOutlineColor(sf::Color{40, 40, 40});
+    window.draw(panel);
 
+    float sectionWidth = panelWidth / 2.f;
+
+    // Middle separator
+    sf::RectangleShape line({2.f, 32.f});
+    line.setPosition({panelX + sectionWidth, panelY + 8.f});
+    line.setFillColor(sf::Color{120, 120, 120});
+    window.draw(line);
+
+    // =========================================================
+    // BATTERY SECTION
+    // =========================================================
+
+    float batteryGroupWidth = 250.f;
+    float batteryStartX = panelX + sectionWidth / 2.f - batteryGroupWidth / 2.f;
+
+    sf::RectangleShape batteryBody({42.f, 20.f});
+    batteryBody.setPosition({batteryStartX, panelY + 14.f});
+    batteryBody.setFillColor(sf::Color::Transparent);
+    batteryBody.setOutlineThickness(2.f);
+    batteryBody.setOutlineColor(sf::Color{30, 30, 30});
+    window.draw(batteryBody);
+
+    sf::RectangleShape batteryHead({5.f, 10.f});
+    batteryHead.setPosition({batteryStartX + 42.f, panelY + 19.f});
+    batteryHead.setFillColor(sf::Color{30, 30, 30});
+    window.draw(batteryHead);
+
+    for (int i = 0; i < 3; i++)
+    {
+        sf::RectangleShape cell({10.f, 14.f});
+        cell.setPosition({batteryStartX + 5.f + i * 11.f, panelY + 17.f});
+
+        if (i < lives)
+        {
+            cell.setFillColor(sf::Color{70, 220, 90});
+        }
+        else
+        {
+            cell.setFillColor(sf::Color{170, 170, 170});
+        }
+
+        window.draw(cell);
+    }
+
+    sf::Text batteryText(font, "Battery", 20);
+    batteryText.setPosition({batteryStartX + 70.f, panelY + 10.f});
+    batteryText.setFillColor(sf::Color::Black);
+    window.draw(batteryText);
+
+    sf::Text batteryValue(font, std::to_string(lives) + "/3", 20);
+    batteryValue.setPosition({batteryStartX + 185.f, panelY + 10.f});
+    batteryValue.setFillColor(sf::Color::Black);
+    window.draw(batteryValue);
+
+    // =========================================================
+    // SCORE SECTION
+    // =========================================================
+
+    float scoreGroupWidth = 220.f;
+    float scoreStartX = panelX + sectionWidth + sectionWidth / 2.f - scoreGroupWidth / 2.f;
+
+    sf::CircleShape scoreIcon(14.f, 5);
+    scoreIcon.setPosition({scoreStartX, panelY + 12.f});
+    scoreIcon.setFillColor(sf::Color{255, 210, 60});
+    scoreIcon.setOutlineThickness(2.f);
+    scoreIcon.setOutlineColor(sf::Color{30, 30, 30});
+    window.draw(scoreIcon);
+
+    sf::Text scoreText(font, "Score", 20);
+    scoreText.setPosition({scoreStartX + 55.f, panelY + 10.f});
+    scoreText.setFillColor(sf::Color::Black);
     window.draw(scoreText);
 
-    sf::Text livesText(font, "Lives: " + std::to_string(lives), 28);
-
-    livesText.setPosition({25.f, 55.f});
-    livesText.setFillColor(sf::Color{20, 60, 170});
-    livesText.setOutlineThickness(2.f);
-    livesText.setOutlineColor(sf::Color::White);
-
-    window.draw(livesText);
+    sf::Text scoreValue(font, std::to_string(score), 20);
+    scoreValue.setPosition({scoreStartX + 150.f, panelY + 10.f});
+    scoreValue.setFillColor(sf::Color::Black);
+    window.draw(scoreValue);
 }
+
 void Game::enemyShoot()
 {
     for (auto &object : objects)
