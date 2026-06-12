@@ -141,23 +141,29 @@ void PlayerRobot::keepInsideArena()
     float halfWidth = bounds.size.x / 2.f;
     float halfHeight = bounds.size.y / 2.f;
 
-    if (position.x < halfWidth)
+    float leftLimit = 85.f;
+    float rightLimit = 500.f;
+
+    float topLimit = 95.f;
+    float bottomLimit = 580.f;
+
+    if (position.x < leftLimit + halfWidth)
     {
-        position.x = halfWidth;
+        position.x = leftLimit + halfWidth;
     }
 
-    if (position.x > arenaSize.x - halfWidth)
+    if (position.x > rightLimit - halfWidth)
     {
-        position.x = arenaSize.x - halfWidth;
+        position.x = rightLimit - halfWidth;
     }
 
-    if (position.y < halfHeight)
+    if (position.y < topLimit + halfHeight)
     {
-        position.y = halfHeight;
+        position.y = topLimit + halfHeight;
     }
 
-    if (position.y > arenaSize.y - halfHeight)
+    if (position.y > bottomLimit - halfHeight)
     {
-        position.y = arenaSize.y - halfHeight;
+        position.y = bottomLimit - halfHeight;
     }
 }

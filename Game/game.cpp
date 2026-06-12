@@ -398,15 +398,10 @@ void Game::drawUI()
 
     float sectionWidth = panelWidth / 2.f;
 
-    // Middle separator
     sf::RectangleShape line({2.f, 32.f});
     line.setPosition({panelX + sectionWidth, panelY + 8.f});
     line.setFillColor(sf::Color{120, 120, 120});
     window.draw(line);
-
-    // =========================================================
-    // BATTERY SECTION
-    // =========================================================
 
     float batteryGroupWidth = 250.f;
     float batteryStartX = panelX + sectionWidth / 2.f - batteryGroupWidth / 2.f;
@@ -449,10 +444,6 @@ void Game::drawUI()
     batteryValue.setPosition({batteryStartX + 185.f, panelY + 10.f});
     batteryValue.setFillColor(sf::Color::Black);
     window.draw(batteryValue);
-
-    // =========================================================
-    // SCORE SECTION
-    // =========================================================
 
     float scoreGroupWidth = 220.f;
     float scoreStartX = panelX + sectionWidth + sectionWidth / 2.f - scoreGroupWidth / 2.f;
